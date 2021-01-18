@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import AuthProvider, { AuthContext } from "../providers/AuthProvider";
 import { Form, Header } from "semantic-ui-react";
 
@@ -6,16 +6,30 @@ const Register = (props) => {
   const [email, setEmail] = useState("testy@test.com");
   const [password, setPassword] = useState("123456");
 
-  const { handleLogin, loading } = useContext(AuthContext);
+  const { handleLogin, loading, authError, setAuthError } = useContext(
+    AuthContext
+  );
+  useEffect(() => {
+    setAuthError(null);
+  }, []);
 
   const handleSubmit = () => {
     handleLogin({ email, password }, props.history);
+  };
+
+  const checkAuthError = () => {
+    if (authError) {
+      return authError.map((err) => {
+        return <p style={{ color: "red" }}>* {err}</p>;
+      });
+    }
   };
   return (
     <>
       <Header as="h1" textAlign="center">
         Login
       </Header>
+      {checkAuthError()}
       <Form onSubmit={handleSubmit}>
         <Form.Input
           required
