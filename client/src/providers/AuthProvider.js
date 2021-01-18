@@ -9,6 +9,7 @@ const AuthProvider = (props) => {
   const handleRegister = async (user, history, setLoader) => {
     try {
       setLoading(true);
+      setAuthError(null);
       // console.log("before axios");
       // let r = await Axios.get("https://reqres.in/api/users?delay=3");
       // console.log("after axios");
@@ -20,17 +21,19 @@ const AuthProvider = (props) => {
       setUser(res.data.data);
       history.push("/user");
     } catch (err) {
+      console.log(err);
+      setAuthError(err.response.data.errors.full_messages);
       setLoading(false);
-      alert(
-        "Error occurred while attempting to register user. Please Debug for more information"
-      );
+      // alert(
+      //   "Error occurred while attempting to register user. Please Debug for more information"
+      // );
     }
   };
 
   const handleLogin = async (user, history) => {
     try {
       setLoading(true);
-      let r = await Axios.get("https://reqres.in/api/users?delay=3");
+      setAuthError(null);
       let res = await Axios.post("/api/auth/sign_in", user);
       setLoading(false);
       setUser(res.data.data);
@@ -38,9 +41,7 @@ const AuthProvider = (props) => {
       console.log(res.data.data.email);
     } catch (err) {
       setLoading(false);
-      alert(
-        "Error occurred while attempting to Login user. Please Debug for more information"
-      );
+      setAuthError(err.response.data.errors);
     }
   };
 
@@ -59,10 +60,13 @@ const AuthProvider = (props) => {
 
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [authError, setAuthError] = useState(null);
 
   const auth = {
     ...user,
     loading,
+    authError,
+    setAuthError,
     handleRegister,
     handleLogin,
     handleLogout,

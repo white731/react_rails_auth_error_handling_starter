@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import AuthProvider, { AuthContext } from "../providers/AuthProvider";
 import { Form, Header } from "semantic-ui-react";
 
@@ -9,7 +9,9 @@ const Register = (props) => {
   const [passwordConfirm, setPasswordConfirm] = useState("123456");
   // const [loading, setLoading] = useState(false);
 
-  const { handleRegister, loading } = useContext(AuthContext);
+  const { handleRegister, loading, authError, setAuthError } = useContext(
+    AuthContext
+  );
 
   const handleSubmit = () => {
     if (password === passwordConfirm) {
@@ -19,12 +21,24 @@ const Register = (props) => {
       alert("Passwords do not match, try again.");
     }
   };
+  useEffect(() => {
+    setAuthError(null);
+  }, []);
+
+  const checkAuthError = () => {
+    if (authError) {
+      return authError.map((err) => {
+        return <p style={{ color: "red" }}>* {err}</p>;
+      });
+    }
+  };
 
   return (
     <>
       <Header as="h1" textAlign="center">
         Register
       </Header>
+      {checkAuthError()}
       <Form onSubmit={handleSubmit}>
         <Form.Input
           required
